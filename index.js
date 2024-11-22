@@ -31,6 +31,13 @@ const express = require('express');
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.log('Error de conexión:', err));
 
+  // Inicializar app de express
+const app = express();  // Aquí definimos `app` 
+
+// Servir archivos estáticos del front-end
+const distPath = path.join(__dirname, 'dist');
+app.use(express.static(distPath));  // Usamos `app` ahora que está definido
+
 // Definir el esquema de GraphQL
 const typeDefs = `
 
@@ -313,9 +320,7 @@ startStandaloneServer(server, {
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
-// Servir archivos estáticos del front-end
-const distPath = path.join(__dirname, 'dist');
-app.use(express.static(distPath));
+
 
 // Manejar cualquier ruta no definida por GraphQL o estática
 app.get('*', (req, res) => {
