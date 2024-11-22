@@ -19,11 +19,15 @@ const JWT_SECRET = 'SECRET_KEY';
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
+const path = require('path');
+const express = require('express');
+
 // Conectar a MongoDB
-mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {
+/* mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-})
+}) */
+  mongoose.connect('MONGODB_URI')
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.log('Error de conexión:', err));
 
@@ -308,4 +312,12 @@ startStandaloneServer(server, {
   }
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
+});
+// Servir archivos estáticos del front-end
+const distPath = path.join(__dirname, 'dist');
+app.use(express.static(distPath));
+
+// Manejar cualquier ruta no definida por GraphQL o estática
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
 });
