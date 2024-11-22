@@ -27,9 +27,10 @@ const express = require('express');
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }) */
-  mongoose.connect('MONGODB_URI')
+  mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.log('Error de conexión:', err));
+
 
   // Inicializar app de express
 const app = express();  // Aquí definimos `app` 
@@ -307,7 +308,7 @@ const server = new ApolloServer({
 const httpServer = createServer(server);
 
 startStandaloneServer(server, {
-  listen: { port: 4000 },
+  listen: { port: process.env.PORT || 4000 },
   context: async ({ req }) => {
     const auth = req ? req.headers.authorization : null;
     if (auth && auth.startsWith('Bearer ')) {
