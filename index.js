@@ -16,12 +16,10 @@ const JWT_SECRET = 'SECRET_KEY';
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 // Conectar a MongoDB
-mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.log('Error de conexión:', err));
+
 // Definir el esquema de GraphQL
 const typeDefs = `
   type User {
@@ -254,14 +252,19 @@ const httpServer = createServer(server);
 startStandaloneServer(server, {
   listen: { port: 4000 },
   context: async ({ req }) => {
-    const auth = req ? req.headers.authorization : null;
+    const auth = req.headers.authorization || null;
     if (auth && auth.startsWith('Bearer ')) {
       const token = auth.substring(7);
       const decodedToken = jwt.verify(token, JWT_SECRET);
       const currentUser = await User.findById(decodedToken.id);
       return { currentUser };
     }
-  }
+  },
+  cors: {
+    origin: '*', // O define dominios específicos
+    methods: ['GET', 'POST', 'OPTIONS'],
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
+
