@@ -1,7 +1,5 @@
-const express = require('express');
-const cors = require("cors");
-
-
+import express from 'express';
+import cors from 'cors';
 const { ApolloServer } = require('@apollo/server');
 
 const { startStandaloneServer } = require('@apollo/server/standalone');
