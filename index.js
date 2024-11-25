@@ -34,8 +34,8 @@ app.use(express.json());
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.log('Error de conexión:', err)); */
   mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    /* useNewUrlParser: true,
+    useUnifiedTopology: true, */
   })
     .then(() => console.log('Conectado a MongoDB'))
     .catch(err => console.log('Error de conexión:', err));
