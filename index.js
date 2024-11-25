@@ -7,13 +7,12 @@ import { createServer } from 'http';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
+
 // Importar modelos
-import Author from './models/Author.js';
-import Book from './models/Book.js';
-import User from './models/User.js';
-import Person from './models/Person.js'; 
-
-
+const Author = require('./models/Author');
+const Book = require('./models/Book');
+const User = require('./models/User');
+const Person = require('./models/Person'); 
 // Clave secreta para tokens JWT
 const JWT_SECRET = 'SECRET_KEY';
 // Suscripciones en el servidor
