@@ -1,18 +1,19 @@
 import express from 'express';
 import cors from 'cors';
-const { ApolloServer } = require('@apollo/server');
-
-const { startStandaloneServer } = require('@apollo/server/standalone');
-const { GraphQLError } = require('graphql');
-const { createServer } = require('http');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+import { GraphQLError } from 'graphql';
+import { createServer } from 'http';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 // Importar modelos
-const Author = require('./models/Author');
-const Book = require('./models/Book');
-const User = require('./models/User');
-const Person = require('./models/Person'); 
+import Author from './models/Author.js';
+import Book from './models/Book.js';
+import User from './models/User.js';
+import Person from './models/Person.js'; 
+
+
 // Clave secreta para tokens JWT
 const JWT_SECRET = 'SECRET_KEY';
 // Suscripciones en el servidor
