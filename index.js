@@ -1,4 +1,8 @@
+import express, {Request, Response} from 'express';
+import cors from "cors";
+
 const { ApolloServer } = require('@apollo/server');
+
 const { startStandaloneServer } = require('@apollo/server/standalone');
 const { GraphQLError } = require('graphql');
 const { createServer } = require('http');
@@ -15,10 +19,26 @@ const JWT_SECRET = 'SECRET_KEY';
 // Suscripciones en el servidor
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
+//JAO DEPLOY
+const app = express();
+app.use(express.static('dist'));
+app.use(
+  cors({
+    origin:"https://jaoreactgraphql.onrender.com"
+  })
+);
+app.use(express.json()); 
+// /JAO DEPLOY
 // Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+/* mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Conectado a MongoDB'))
-  .catch(err => console.log('Error de conexión:', err));
+  .catch(err => console.log('Error de conexión:', err)); */
+  mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+    .then(() => console.log('Conectado a MongoDB'))
+    .catch(err => console.log('Error de conexión:', err));
 
 // Definir el esquema de GraphQL
 const typeDefs = `
@@ -252,19 +272,15 @@ const httpServer = createServer(server);
 startStandaloneServer(server, {
   listen: { port: 4000 },
   context: async ({ req }) => {
-    const auth = req.headers.authorization || null;
+    const auth = req ? req.headers.authorization : null;
     if (auth && auth.startsWith('Bearer ')) {
       const token = auth.substring(7);
       const decodedToken = jwt.verify(token, JWT_SECRET);
       const currentUser = await User.findById(decodedToken.id);
       return { currentUser };
     }
-  },
-  cors: {
-    origin: '*', // O define dominios específicos
-    methods: ['GET', 'POST', 'OPTIONS'],
-  },
+  }
 }).then(({ url }) => {
-  console.log(`Server ready at ${url}`);
+  console.log(`Server JAO ready at ${url}`);
 });
 
