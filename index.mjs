@@ -851,7 +851,10 @@ const pubsub = new PubSub(); */
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { WebSocketServer } from 'ws';
+//import { WebSocketServer } from 'ws';
+import WebSocket from 'ws';  // Importación por defecto de 'ws'
+const { WebSocketServer } = WebSocket;
+
 import { useServer } from 'graphql-ws/lib/use/ws';
 import express from 'express';
 import http from 'http';
