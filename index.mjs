@@ -826,7 +826,8 @@ startStandaloneServer(server, {
 });
  */
 //CAMIO HABILITANDO WEBSOCKET
-const { ApolloServer } = require('@apollo/server');
+
+/* const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { WebSocketServer } = require('ws');
@@ -846,7 +847,24 @@ const Person = require('./models/Person');
 
 // Clave secreta para JWT
 const JWT_SECRET = 'SECRET_KEY';
-const pubsub = new PubSub();
+const pubsub = new PubSub(); */
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import express from 'express';
+import http from 'http';
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { PubSub } from 'graphql-subscriptions';
+
+// Importar modelos
+import Author from './models/Author.js';
+import Book from './models/Book.js';
+import User from './models/User.js';
+import Person from './models/Person.js';
 
 // Conexión a MongoDB
 //mongoose.connect('mongodb+srv://tu_usuario:tu_contraseña@tu_cluster.mongodb.net/graphql-library', {})
@@ -1066,6 +1084,6 @@ app.use(
 // Iniciar el servidor
 const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}/graphql`);
+  console.log(`Server JAO is running at http://localhost:${PORT}/graphql`);
   console.log(`WebSocket subscriptions are running at ws://localhost:${PORT}/graphql`);
 });
