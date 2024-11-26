@@ -862,6 +862,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { PubSub } from 'graphql-subscriptions';
+import cors from 'cors';
 
 // Importar modelos
 import Author from './models/Author.js';
@@ -1042,6 +1043,14 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 const app = express();
 const httpServer = http.createServer(app);
 
+// Configurar CORS para permitir acceso desde tu front-end
+const corsOptions = {
+  origin: 'https://jaoreactgraphqlfront.onrender.com',  // Dominio de tu front-end
+  methods: ['GET', 'POST'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 // Configurar WebSocketServer
 /* const wsServer = new WebSocketServer({
   server: httpServer,
@@ -1049,8 +1058,20 @@ const httpServer = http.createServer(app);
 }); */
 const wsServer = new WebSocket.Server({
   server: httpServer,
-  path: '/graphql',
+  path: '/graphql',handleProtocols: (protocols) => {
+    // Asegúrate de que el protocolo WebSocket esté bien manejado.
+    return protocols.includes('graphql-ws');
+  },
+  // Agrega esto para permitir CORS
+  cors: {
+    origin: 'https://jaoreactgraphqlfront.onrender.com',  // Permitir tu front-end
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
+  }
 });
+
+
+
 
 useServer({
   schema,
