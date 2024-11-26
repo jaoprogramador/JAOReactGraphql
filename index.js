@@ -310,8 +310,7 @@ const pubsub = new PubSub();
 
 // Conectar a MongoDB
 mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  
 })
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.log('Error de conexión:', err));
