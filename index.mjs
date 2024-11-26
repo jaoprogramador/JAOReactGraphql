@@ -848,6 +848,7 @@ const Person = require('./models/Person');
 // Clave secreta para JWT
 const JWT_SECRET = 'SECRET_KEY';
 const pubsub = new PubSub(); */
+const JWT_SECRET = 'SECRET_KEY';
 //VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
