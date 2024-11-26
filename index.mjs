@@ -849,7 +849,7 @@ const Person = require('./models/Person');
 const JWT_SECRET = 'SECRET_KEY';
 const pubsub = new PubSub(); */
 //VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
-/* import { ApolloServer } from '@apollo/server';
+import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 //import { WebSocketServer } from 'ws';
@@ -1111,9 +1111,9 @@ const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
   console.log(`Server JAO is running at http://localhost:${PORT}/graphql`);
   console.log(`WebSocket subscriptions are running at ws://localhost:${PORT}/graphql`);
-}); */
+}); 
 
-import { ApolloServer } from '@apollo/server';
+/* import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 //import { WebSocketServer } from 'ws';
@@ -1307,11 +1307,7 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 const app = express();
 const httpServer = http.createServer(app);
 
-// Configurar WebSocketServer
-/* const wsServer = new WebSocketServer({
-  server: httpServer,
-  path: '/graphql',
-}); */
+
 const wsServer = new WebSocket.Server({
   server: httpServer,
   path: '/graphql',
@@ -1357,4 +1353,4 @@ const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
   console.log(`Server JAO is running at http://localhost:${PORT}/graphql`);
   console.log(`WebSocket subscriptions are running at ws://localhost:${PORT}/graphql`);
-});
+}); */
