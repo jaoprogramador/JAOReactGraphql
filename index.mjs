@@ -1043,7 +1043,11 @@ const app = express();
 const httpServer = http.createServer(app);
 
 // Configurar WebSocketServer
-const wsServer = new WebSocketServer({
+/* const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
+}); */
+const wsServer = new WebSocket.Server({
   server: httpServer,
   path: '/graphql',
 });
