@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // Definición del esquema de libro
 const bookSchema = new mongoose.Schema({
@@ -24,6 +24,6 @@ const bookSchema = new mongoose.Schema({
 // Crear el modelo de libro
 const Book = mongoose.model('Book', bookSchema);
 
-module.exports = Book; 
-//export default Book;
+//module.exports = Book; 
+export default Book;
 
