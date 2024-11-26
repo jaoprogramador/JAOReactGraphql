@@ -861,11 +861,14 @@ import bcrypt from 'bcrypt';
 import { PubSub } from 'graphql-subscriptions';
 
 // Importar modelos
-import Author from './models/Author.js';
+/* import Author from './models/Author.js';
 import Book from './models/Book.js';
 import User from './models/User.js';
-import Person from './models/Person.js';
-
+import Person from './models/Person.js'; */
+const Author = require('./models/Author');
+const Book = require('./models/Book');
+const User = require('./models/User');
+const Person = require('./models/Person');
 // Conexión a MongoDB
 //mongoose.connect('mongodb+srv://tu_usuario:tu_contraseña@tu_cluster.mongodb.net/graphql-library', {})
 mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {})
