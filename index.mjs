@@ -141,6 +141,7 @@ const resolvers = {
     },
     findPerson: async (root, args) => await Person.findOne({ name: args.name }),
     allBooks: async (root, { genre }) => {
+      console.log('allBooks:::genre',genre);
       const filter = genre ? { genres: genre } : {};
       return await Book.find(filter).populate('author');
     },
