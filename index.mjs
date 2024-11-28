@@ -17,6 +17,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { PubSub } from 'graphql-subscriptions';
+const pubsub = new PubSub();
 import cors from 'cors';
 
 // Importar modelos
