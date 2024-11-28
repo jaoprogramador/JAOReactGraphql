@@ -166,6 +166,11 @@ const resolvers = {
     me: (root, args, context) => {
       console.log('me:::genre',args.genre);
       console.log('me:::context.currentUser',context.currentUser);
+      if (!context.currentUser) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
       return context.currentUser;
     },
   },
@@ -306,6 +311,12 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  console.log('Incoming Request:', req.method, req.path);
+  console.log('Headers:', req.headers);
+  next();
+});
+
 // Configurar WebSocketServer
 
 const wsServer = new WebSocket.Server({
