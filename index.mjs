@@ -218,9 +218,9 @@ const resolvers = {
     addBook: async (root, args, context) => {
       const { title, published, genres } = args;
       const authorName = args.author.name;
-      if (!context.currentUser) {
+      /* if (!context.currentUser) {
         throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
-      }
+      } */
       if (title.length < 3) {
         throw new GraphQLError('El título del libro debe tener al menos 3 caracteres.', {
           extensions: { code: 'BAD_USER_INPUT', invalidArgs: title },
