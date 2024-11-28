@@ -306,7 +306,7 @@ const httpServer = http.createServer(app);
 // Configurar CORS para permitir acceso desde tu front-end
 const corsOptions = {
   origin: 'https://jaoreactgraphqlfront.onrender.com',  // Dominio de tu front-end
-  methods: ['GET', 'POST'],
+  //methods: ['GET', 'POST'],
   credentials: true,
 };
 
@@ -371,8 +371,15 @@ const server = new ApolloServer({
       console.log('server:::Current user:', decodedToken);
       const currentUser = await User.findById(decodedToken.id);
       console.log('server:::Current user:', currentUser);
+      if (!currentUser) {
+        console.error('server:::No user found for this token');
+        throw new Error('Not authenticated');
+      }
       return { currentUser };
     }
+    console.error('server:::No authorization header found or invalid format');
+    throw new Error('Not authenticated');
+
   },
 });
 await server.start();
