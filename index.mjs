@@ -1,5 +1,8 @@
 const JWT_SECRET = 'SECRET_KEY';
 //VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
+//const { GraphQLError } = require('graphql');
+import { GraphQLError } from 'graphql';
+
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
