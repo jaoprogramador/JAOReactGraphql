@@ -10,7 +10,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
 const { WebSocketServer } = WebSocket;
 
-import { useServer } from 'graphql-ws/lib/use/ws';
+/* import { useServer } from 'graphql-ws/lib/use/ws'; */
 import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
@@ -325,7 +325,7 @@ const wsServer = new WebSocket.Server({
 
 
 
-useServer({
+/* useServer({
   schema,
   context: async (ctx, msg, args) => {
     const auth = ctx.connectionParams?.authorization || '';
@@ -345,7 +345,7 @@ useServer({
     }
     return {};
   },
-}, wsServer);
+}, wsServer); */
 
 // Configurar Apollo Server para HTTP
 const server = new ApolloServer({
