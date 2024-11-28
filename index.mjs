@@ -352,10 +352,14 @@ const server = new ApolloServer({
   schema,
   context: async ({ req }) => {
     const auth = req.headers.authorization || '';
+    console.log('server:::auth:', auth);
     if (auth.startsWith('Bearer ')) {
       const token = auth.substring(7);
       const decodedToken = jwt.verify(token, JWT_SECRET);
+      console.log('server:::Decoded token:', token);
+      console.log('server:::Current user:', decodedToken);
       const currentUser = await User.findById(decodedToken.id);
+      console.log('server:::Current user:', currentUser);
       return { currentUser };
     }
   },
