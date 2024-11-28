@@ -140,11 +140,16 @@ const resolvers = {
       return await Person.find(byPhone);
     },
     findPerson: async (root, args) => await Person.findOne({ name: args.name }),
-    allBooks: async (root, { genre }) => {
+    allBooks: async (root, { args }) => {
+      console.log('allBooks:::genre',args.genre);//PRUEBA
+      const filter = args.genre ? { genres: args.genre } : {};
+      return await Book.find(filter).populate('author');
+    }, 
+    /* allBooks: async (root, { genre }) => {
       console.log('allBooks:::genre',genre);
       const filter = genre ? { genres: genre } : {};
       return await Book.find(filter).populate('author');
-    },
+    }, */
     allAuthors: async () => {
       return await Author.find();
     },
