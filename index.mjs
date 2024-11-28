@@ -164,6 +164,8 @@ const resolvers = {
       }));
     }, */
     me: (root, args, context) => {
+      console.log('me:::genre',args.genre);
+      console.log('me:::context.currentUser',context.currentUser);
       return context.currentUser;
     },
   },
