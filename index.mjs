@@ -329,17 +329,18 @@ useServer({
   schema,
   context: async (ctx, msg, args) => {
     const auth = ctx.connectionParams?.authorization || '';
+    console.log('useServer:::auth:', auth);
     if (auth.startsWith('Bearer ')) {
       try {
         const token = auth.substring(7);
         const decodedToken = jwt.verify(token, JWT_SECRET);
         const currentUser = await User.findById(decodedToken.id);
-        console.log('Decoded token:', decodedToken);
-        console.log('Current user:', currentUser);
+        console.log('useServer:::Decoded token:', decodedToken);
+        console.log('useServer:::Current user:', currentUser);
 
         return { currentUser };
       } catch (error) {
-        console.error('Error verifying token:', error);
+        console.error('useServer:::Error verifying token:', error);
       }
     }
     return {};
@@ -347,8 +348,7 @@ useServer({
 }, wsServer);
 
 // Configurar Apollo Server para HTTP
-//HAY DUPLICIDAD
-/* const server = new ApolloServer({
+const server = new ApolloServer({
   schema,
   context: async ({ req }) => {
     const auth = req.headers.authorization || '';
@@ -359,7 +359,7 @@ useServer({
       return { currentUser };
     }
   },
-}); */
+});
 await server.start();
 
 app.use(
