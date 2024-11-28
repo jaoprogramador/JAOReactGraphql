@@ -982,8 +982,16 @@ const resolvers = {
       const filter = genre ? { genres: genre } : {};
       return await Book.find(filter).populate('author');
     },
-    allAuthors: async () => await Author.find(),
-    me: (root, args, context) => context.currentUser,
+    //CAMBIO PARA ERROR getAllFavourite
+    allAuthors: async () => {
+      return await Author.find();
+    },
+    me: (root, args, context) => {
+      return context.currentUser;
+    },
+    //ERROR getAllFavourite
+    /* allAuthors: async () => await Author.find(),
+    me: (root, args, context) => context.currentUser, */
   },
   Mutation: {
     createUser: async (root, args) => {
@@ -1019,6 +1027,43 @@ const resolvers = {
       if (!context.currentUser) {
         throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
       }
+      if (title.length < 3) {
+        throw new GraphQLError('El título del libro debe tener al menos 3 caracteres.', {
+          extensions: { code: 'BAD_USER_INPUT', invalidArgs: title },
+        });
+      }
+      const currentYear = new Date().getFullYear();
+      if (published > currentYear) {
+        throw new GraphQLError('El año de publicación no puede ser mayor que el año actual.', {
+          extensions: { code: 'BAD_USER_INPUT', invalidArgs: published },
+        });
+      }
+      if (!genres || genres.length === 0) {
+        throw new GraphQLError('El libro debe tener al menos un género.', {
+          extensions: { code: 'BAD_USER_INPUT', invalidArgs: genres },
+        });
+      }
+      let author = await Author.findOne({ name: authorName });
+      if (!author) {
+        author = new Author({ name: authorName, bookCount: 0 });
+        await author.save();
+      }
+      const book = new Book({ title, published, author: author._id, genres });
+      await book.save();
+
+      pubsub.publish(BOOK_ADDED, { bookAdded: book });
+
+      author.bookCount += 1;
+      await author.save();
+      return await Book.findById(book._id).populate('author');
+    },
+    //ERROR.ADDBOOK
+    /* addBook: async (root, args, context) => {
+      const { title, published, genres } = args;
+      const authorName = args.author.name;
+      if (!context.currentUser) {
+        throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
+      }
       let author = await Author.findOne({ name: authorName });
       if (!author) {
         author = new Author({ name: authorName, bookCount: 0 });
@@ -1030,7 +1075,7 @@ const resolvers = {
       author.bookCount += 1;
       await author.save();
       return await Book.findById(book._id).populate('author');
-    },
+    }, */
   },
   Subscription: {
     bookAdded: {
