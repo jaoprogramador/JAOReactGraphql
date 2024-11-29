@@ -120,6 +120,10 @@ const typeDefs = `
       username: String!
       password: String!
     ): Token
+    
+    allBooks(
+      genre: String
+    ): [Book!]!
   }
 
   type Subscription {
@@ -230,6 +234,13 @@ const resolvers = {
       person.phone = args.phone;
       await person.save();
       return person;
+    },
+    allBooks: async (root, args) => {
+      console.log('allBooks::::NEW ',args)
+      console.log('allBooks::::NEW args.genre ',args.genre)
+      const filter = args.genre ? { genres: args.genre } : {};
+      return await Book.find(filter).populate('author');
+    
     },
 
     addBook: async (root, args, context) => {
