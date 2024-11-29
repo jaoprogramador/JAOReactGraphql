@@ -148,7 +148,6 @@ const resolvers = {
      allBooks: async (root, { genre }) => {
       console.log('allBooks:::genre',genre);
       const filter = genre ? { genres: genre } : {};
-      console.log('allBooks:::filter',filter);
       return await Book.find(filter).populate('author');
     }, 
     allAuthors: async () => {
@@ -165,8 +164,6 @@ const resolvers = {
       }));
     }, */
     me: (root, args, context) => {
-      const {  genres } = args;  //CAMBIO
-	    console.log('me:::args',args);
       console.log('me:::genre',args.genre);
       console.log('me:::context.currentUser',context.currentUser);
       if (!context.currentUser) {
