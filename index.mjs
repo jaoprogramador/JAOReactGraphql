@@ -145,7 +145,8 @@ const resolvers = {
       const filter = args.genre ? { genres: args.genre } : {};
       return await Book.find(filter).populate('author');
     },  */
-     allBooks: async (root, { genre }) => {
+     allBooks: async (root, args,{ genre }) => {//CAMBIO
+      console.log('allBooks:::args',args);
       console.log('allBooks:::genre',genre);
       const filter = genre ? { genres: genre } : {};
       console.log('allBooks:::filter',filter);
