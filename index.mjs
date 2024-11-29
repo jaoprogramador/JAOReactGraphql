@@ -322,12 +322,28 @@ const corsOptions = {
   origin: 'https://jaoreactgraphqlfront.onrender.com',  // Dominio de tu front-end
   //methods: ['GET', 'POST'],
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+
 };
 
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
   console.log('Incoming Request:', req.method, req.path);
   console.log('Headers:', req.headers);
+  const authHeader = req.headers.authorization;
+  console.log('authHeader:', authHeader);
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    console.log('app.use:::token:', token);
+    try {
+      req.currentUser = jwt.verify(token, 'SECRET_KEY');
+      console.error('app.use::::req.currentUser',req.currentUser);
+    } catch (e) {
+      console.error('Invalid token');
+    }
+  }
+
+
   next();
 });
 
