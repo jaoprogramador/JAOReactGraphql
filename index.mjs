@@ -145,12 +145,11 @@ const resolvers = {
       const filter = args.genre ? { genres: args.genre } : {};
       return await Book.find(filter).populate('author');
     },  */
-     allBooks: async (root, args,{ genre }) => {//CAMBIO
-      console.log('allBooks:::args.genre',args.genre);
-      console.log('allBooks:::genre',genre);
-      const filter = genre ? { genres: genre } : {};
-      console.log('allBooks:::filter',filter);
+     allBooks: async (root, args) => {//CAMBIO
+      
+      const filter = args.genre ? { genres: args.genre } : {};
       return await Book.find(filter).populate('author');
+    
     }, 
     allAuthors: async () => {
       return await Author.find();
@@ -171,7 +170,7 @@ const resolvers = {
       console.log('me:::genre',args.genre);
       console.log('me:::context.currentUser',context.currentUser);
       if (!context.currentUser) {
-        throw new GraphQLError('Not authenticated', {
+        throw new GraphQLError('Not authenticated in recomendatio', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
