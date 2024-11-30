@@ -121,9 +121,6 @@ const typeDefs = `
       password: String!
     ): Token
     
-    allBooks(
-      genre: String
-    ): [Book!]!
   }
 
   type Subscription {
@@ -134,7 +131,7 @@ const typeDefs = `
 const BOOK_ADDED = 'BOOK_ADDED';
 
 const resolvers = {
-  Query: {
+  QuQuery: {
     personCount: async () => await Person.countDocuments(),
     allPersons: async (root, args) => {
       if (!args.phone) {
@@ -144,41 +141,19 @@ const resolvers = {
       return await Person.find(byPhone);
     },
     findPerson: async (root, args) => await Person.findOne({ name: args.name }),
-    /* allBooks: async (root, { args }) => {
-      console.log('allBooks:::genre',args.genre);//PRUEBA
-      const filter = args.genre ? { genres: args.genre } : {};
+    allBooks: async (root, { genre }) => {
+      console.log('Resolvers:::allBooks-genre',genre);
+      const filter = genre ? { genres: genre } : {};
+      console.log('Resolvers:::allBooks filter',filter);
       return await Book.find(filter).populate('author');
-    },  */
-     allBooks: async (root, args) => {//CAMBIO
-      
-      const filter = args.genre ? { genres: args.genre } : {};
-      return await Book.find(filter).populate('author');
-    
-    }, 
+    },
     allAuthors: async () => {
       return await Author.find();
     },
-    /* allAuthors: async (_, __, { dataSources }) => {
-      const authors = await dataSources.authorAPI.getAllAuthors(); // Obtienes todos los autores
-      const books = await dataSources.bookAPI.getAllBooks(); // Obtienes todos los libros
-
-      // Asocias el número de libros de cada autor
-      return authors.map(author => ({
-        ...author,
-        bookCount: books.filter(book => book.authorId === author.id).length
-      }));
-    }, */
     me: (root, args, context) => {
-      const {  genres } = args;  //CAMBIO
-	    console.log('me:::args',args);
-      console.log('me:::genre',args.genre);
-      console.log('me:::context.currentUser',context.currentUser);
-      if (!context.currentUser) {
-        throw new GraphQLError('Not authenticated in recomendatio', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
-      }
-      return context.currentUser;
+      console.log('Resolvers:::me-args',args);
+      console.log('Resolvers:::me-context',context.currentUser);
+	  return context.currentUser;
     },
   },
 
@@ -235,20 +210,13 @@ const resolvers = {
       await person.save();
       return person;
     },
-    allBooks: async (root, args) => {
-      console.log('allBooks::::NEW ',args)
-      console.log('allBooks::::NEW args.genre ',args.genre)
-      const filter = args.genre ? { genres: args.genre } : {};
-      return await Book.find(filter).populate('author');
-    
-    },
 
     addBook: async (root, args, context) => {
       const { title, published, genres } = args;
       const authorName = args.author.name;
-      /* if (!context.currentUser) {
+      if (!context.currentUser) {
         throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
-      } */
+      }
       if (title.length < 3) {
         throw new GraphQLError('El título del libro debe tener al menos 3 caracteres.', {
           extensions: { code: 'BAD_USER_INPUT', invalidArgs: title },

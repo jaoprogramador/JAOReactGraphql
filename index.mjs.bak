@@ -120,6 +120,7 @@ const typeDefs = `
       username: String!
       password: String!
     ): Token
+    
   }
 
   type Subscription {
@@ -130,7 +131,7 @@ const typeDefs = `
 const BOOK_ADDED = 'BOOK_ADDED';
 
 const resolvers = {
-  Query: {
+  QuQuery: {
     personCount: async () => await Person.countDocuments(),
     allPersons: async (root, args) => {
       if (!args.phone) {
@@ -140,38 +141,19 @@ const resolvers = {
       return await Person.find(byPhone);
     },
     findPerson: async (root, args) => await Person.findOne({ name: args.name }),
-    /* allBooks: async (root, { args }) => {
-      console.log('allBooks:::genre',args.genre);//PRUEBA
-      const filter = args.genre ? { genres: args.genre } : {};
-      return await Book.find(filter).populate('author');
-    },  */
-     allBooks: async (root, { genre }) => {
-      console.log('allBooks:::genre',genre);
+    allBooks: async (root, { genre }) => {
+      console.log('Resolvers:::allBooks-genre',genre);
       const filter = genre ? { genres: genre } : {};
+      console.log('Resolvers:::allBooks filter',filter);
       return await Book.find(filter).populate('author');
-    }, 
+    },
     allAuthors: async () => {
       return await Author.find();
     },
-    /* allAuthors: async (_, __, { dataSources }) => {
-      const authors = await dataSources.authorAPI.getAllAuthors(); // Obtienes todos los autores
-      const books = await dataSources.bookAPI.getAllBooks(); // Obtienes todos los libros
-
-      // Asocias el número de libros de cada autor
-      return authors.map(author => ({
-        ...author,
-        bookCount: books.filter(book => book.authorId === author.id).length
-      }));
-    }, */
     me: (root, args, context) => {
-      console.log('me:::genre',args.genre);
-      console.log('me:::context.currentUser',context.currentUser);
-      if (!context.currentUser) {
-        throw new GraphQLError('Not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
-      }
-      return context.currentUser;
+      console.log('Resolvers:::me-args',args);
+      console.log('Resolvers:::me-context',context.currentUser);
+	  return context.currentUser;
     },
   },
 
@@ -227,6 +209,13 @@ const resolvers = {
       person.phone = args.phone;
       await person.save();
       return person;
+    },
+    allBooks: async (root, args) => {
+      console.log('allBooks::::NEW ',args)
+      console.log('allBooks::::NEW args.genre ',args.genre)
+      const filter = args.genre ? { genres: args.genre } : {};
+      return await Book.find(filter).populate('author');
+    
     },
 
     addBook: async (root, args, context) => {
@@ -308,12 +297,28 @@ const corsOptions = {
   origin: 'https://jaoreactgraphqlfront.onrender.com',  // Dominio de tu front-end
   //methods: ['GET', 'POST'],
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+
 };
 
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
   console.log('Incoming Request:', req.method, req.path);
   console.log('Headers:', req.headers);
+  const authHeader = req.headers.authorization;
+  console.log('authHeader:', authHeader);
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    console.log('app.use:::token:', token);
+    try {
+      req.currentUser = jwt.verify(token, 'SECRET_KEY');
+      console.error('app.use::::req.currentUser',req.currentUser);
+    } catch (e) {
+      console.error('Invalid token');
+    }
+  }
+
+
   next();
 });
 
