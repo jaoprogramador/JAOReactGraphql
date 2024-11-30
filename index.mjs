@@ -279,118 +279,33 @@ const resolvers = {
   },
 };
 
-// Crear el esquema ejecutable
-const schema = makeExecutableSchema({ typeDefs, resolvers });
-
-const app = express();
-const httpServer = http.createServer(app);
-
-// Configurar CORS para permitir acceso desde tu front-end
-const corsOptions = {
-  origin: 'https://jaoreactgraphqlfront.onrender.com',  // Dominio de tu front-end
-  //methods: ['GET', 'POST'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
-
-};
-
-app.use(cors(corsOptions));
-app.use((req, res, next) => {
-  console.log('Incoming Request:', req.method, req.path);
-  console.log('Headers:', req.headers);
-  const authHeader = req.headers.authorization;
-  console.log('authHeader:', authHeader);
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-    console.log('app.use:::token:', token);
-    try {
-      req.currentUser = jwt.verify(token, 'SECRET_KEY');
-      console.error('app.use::::req.currentUser',req.currentUser);
-    } catch (e) {
-      console.error('Invalid token');
-    }
-  }
-
-
-  next();
-});
-
-// Configurar WebSocketServer
-
-const wsServer = new WebSocket.Server({
-  server: httpServer,
-  path: '/graphql',handleProtocols: (protocols) => {
-    // Asegúrate de que el protocolo WebSocket esté bien manejado.
-    return protocols.includes('graphql-ws');
-  },
-  // Agrega esto para permitir CORS
-  cors: {
-    origin: 'https://jaoreactgraphqlfront.onrender.com',  // Permitir tu front-end
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Authorization', 'Content-Type'],
-  }
-});
-
-
-
-
-/* useServer({
-  schema,
-  context: async (ctx, msg, args) => {
-    const auth = ctx.connectionParams?.authorization || '';
-    console.log('useServer:::auth:', auth);
-    if (auth.startsWith('Bearer ')) {
-      try {
-        const token = auth.substring(7);
-        const decodedToken = jwt.verify(token, JWT_SECRET);
-        const currentUser = await User.findById(decodedToken.id);
-        console.log('useServer:::Decoded token:', decodedToken);
-        console.log('useServer:::Current user:', currentUser);
-
-        return { currentUser };
-      } catch (error) {
-        console.error('useServer:::Error verifying token:', error);
-      }
-    }
-    return {};
-  },
-}, wsServer); */
-
-// Configurar Apollo Server para HTTP
 const server = new ApolloServer({
-  schema,
+  typeDefs,
+  resolvers,
+  csrfPrevention: false, // Deshabilita la protección CSRF temporalmente
+  formatError: (error) => {
+    console.error("Error en el servidor:", error); 
+    return error;
+  },
   context: async ({ req }) => {
-    const auth = req.headers.authorization || '';
-    console.log('server:::auth:', auth);
-    if (auth.startsWith('Bearer ')) {
+    console.log(req.body); // Verifica la solicitud
+    // Resto del código...
+  }
+});
+
+const httpServer = createServer(server);
+
+startStandaloneServer(server, {
+  listen: { port: 4000 },
+  context: async ({ req }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.startsWith('Bearer ')) {
       const token = auth.substring(7);
       const decodedToken = jwt.verify(token, JWT_SECRET);
-      console.log('server:::Decoded token:', token);
-      console.log('server:::Current user:', decodedToken);
       const currentUser = await User.findById(decodedToken.id);
-      console.log('server:::Current user:', currentUser);
-      if (!currentUser) {
-        console.error('server:::No user found for this token');
-        throw new Error('Not authenticated');
-      }
       return { currentUser };
     }
-    console.error('server:::No authorization header found or invalid format');
-    throw new Error('Not authenticated');
-
-  },
+  }
+}).then(({ url }) => {
+  console.log(`Server ready at ${url}`);
 });
-await server.start();
-
-app.use(
-  '/graphql',
-  express.json(),
-  expressMiddleware(server)
-);
-
-// Iniciar el servidor
-const PORT = process.env.PORT || 4000;
-httpServer.listen(PORT, () => {
-  console.log(`Server JAO is running at http://localhost:${PORT}/graphql`);
-  console.log(`WebSocket subscriptions are running at ws://localhost:${PORT}/graphql`);
-}); 
