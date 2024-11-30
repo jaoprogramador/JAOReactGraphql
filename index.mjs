@@ -131,7 +131,7 @@ const typeDefs = `
 const BOOK_ADDED = 'BOOK_ADDED';
 
 const resolvers = {
-  QuQuery: {
+  Query: {
     personCount: async () => await Person.countDocuments(),
     allPersons: async (root, args) => {
       if (!args.phone) {
