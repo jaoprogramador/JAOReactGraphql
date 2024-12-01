@@ -1,4 +1,3 @@
-const JWT_SECRET = 'SECRET_KEY';
 //VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
 //const { GraphQLError } = require('graphql');
 import { GraphQLError } from 'graphql';
@@ -27,6 +26,7 @@ import Author from './models/Author.js';
 import Book from './models/Book.js';
 import User from './models/User.js';
 import Person from './models/Person.js'; 
+const JWT_SECRET = 'SECRET_KEY';
 const app = express();
 app.use(express.json()); // Error:message: 'GraphQL operations must contain a non-empty query 
 // Conexión a MongoDB
@@ -154,11 +154,14 @@ const resolvers = {
     allAuthors: async () => {
       return await Author.find();
     },
-    me: (root, args, context) => {
-      console.log('Resolvers:::me-args',args);
-      console.log('Resolvers:::me-context',context.currentUser);
+   me: (root, args, context) => {
+	  console.log('Resolvers:::me-context', context.currentUser);
+	  if (!context.currentUser) {
+	    return null; // Usuario no autenticado
+	  }
 	  return context.currentUser;
-    },
+	},
+
   },
 
   Mutation: {

@@ -1,6 +1,4 @@
-const JWT_SECRET = 'SECRET_KEY';
 //VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
-//const { GraphQLError } = require('graphql');
 import { GraphQLError } from 'graphql';
 import { createServer } from 'http';
 import { startStandaloneServer } from '@apollo/server/standalone';
@@ -8,11 +6,9 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-//import { WebSocketServer } from 'ws';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
 const { WebSocketServer } = WebSocket;
 
-/* import { useServer } from 'graphql-ws/lib/use/ws'; */
 import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
@@ -27,6 +23,7 @@ import Author from './models/Author.js';
 import Book from './models/Book.js';
 import User from './models/User.js';
 import Person from './models/Person.js'; 
+const JWT_SECRET = 'SECRET_KEY';
 const app = express();
 app.use(express.json()); // Error:message: 'GraphQL operations must contain a non-empty query 
 // Conexión a MongoDB
@@ -294,6 +291,7 @@ const server = new ApolloServer({
     console.error("Error en el servidor:", error); 
     return error;
   },
+/*
  context: async ({ req }) => {
   console.log('Request headers:', req.headers);
 
@@ -313,7 +311,7 @@ const server = new ApolloServer({
   }
 
   return { currentUser: null };
-},
+},*/
 
 
 });
