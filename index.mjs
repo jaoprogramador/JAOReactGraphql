@@ -333,6 +333,10 @@ useServer({
   },
 }, wsServer);
 
+// Aplicar middleware de Apollo Server a Express
+await server.start();
+server.applyMiddleware({ app });
+
 // Inicia el servidor HTTP
 const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
