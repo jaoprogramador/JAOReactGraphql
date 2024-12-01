@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/client": "^3.11.10",
-    "@apollo/server": "^4.3.2",
+    "@apollo/server": "^4.11.2",
+    "@graphql-tools/schema": "^10.0.10",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

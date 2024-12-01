@@ -333,9 +333,12 @@ useServer({
   },
 }, wsServer);
 
-// Aplicar middleware de Apollo Server a Express
+// Iniciar el servidor Apollo
 await server.start();
-server.applyMiddleware({ app });
+
+// Aplicar el middleware de Apollo Server a Express
+app.use('/graphql', expressMiddleware(server));
+
 
 // Inicia el servidor HTTP
 const PORT = process.env.PORT || 4000;
