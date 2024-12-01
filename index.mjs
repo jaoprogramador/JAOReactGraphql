@@ -27,6 +27,13 @@ app.use(express.json()); // Error:message: 'GraphQL operations must contain a no
 
 // Crear un servidor HTTP
 const httpServer = createServer(app);
+// Configura CORS para permitir solicitudes desde tu frontend
+const corsOptions = {
+  origin: 'https://jaoreactgraphqlfront.onrender.com',  // Asegúrate de poner el dominio de tu frontend
+  credentials: true,  // Permite el envío de cookies (si es necesario)
+};
+
+app.use(cors(corsOptions));
 
 // Conexión a MongoDB
 mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {})
