@@ -4,7 +4,7 @@ const JWT_SECRET = 'SECRET_KEY';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-const { GraphQLError } = require('graphql');
+import { GraphQLError } from 'graphql';
 //import { WebSocketServer } from 'ws';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
 const { WebSocketServer } = WebSocket;
