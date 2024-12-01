@@ -1,15 +1,11 @@
-//VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
 import { GraphQLError } from 'graphql';
 import { createServer } from 'http';
 import { startStandaloneServer } from '@apollo/server/standalone';
-
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
-import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
-
 
 import express from 'express';
 import http from 'http';
@@ -32,17 +28,14 @@ app.use(express.json()); // Error:message: 'GraphQL operations must contain a no
 // Crear un servidor HTTP
 const httpServer = createServer(app);
 
-
 // Conexión a MongoDB
-//mongoose.connect('mongodb+srv://tu_usuario:tu_contraseña@tu_cluster.mongodb.net/graphql-library', {})
 mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {})
-.then(() => console.log('Conectado a MongoDB'))
+  .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.log('Error de conexión:', err));
 
 // Definir esquema y resolvers
 
 const typeDefs = `
-
   type User {
     username: String!
     favoriteGenre: String!
@@ -150,22 +143,21 @@ const resolvers = {
     },
     findPerson: async (root, args) => await Person.findOne({ name: args.name }),
     allBooks: async (root, { genre }) => {
-      console.log('Resolvers:::allBooks-genre',genre);
+      console.log('Resolvers:::allBooks-genre', genre);
       const filter = genre ? { genres: genre } : {};
-      console.log('Resolvers:::allBooks filter',filter);
+      console.log('Resolvers:::allBooks filter', filter);
       return await Book.find(filter).populate('author');
     },
     allAuthors: async () => {
       return await Author.find();
     },
-   me: (root, args, context) => {
-	  console.log('Resolvers:::me-context', context.currentUser);
-	  if (!context.currentUser) {
-	    return null; // Usuario no autenticado
-	  }
-	  return context.currentUser;
-	},
-
+    me: (root, args, context) => {
+      console.log('Resolvers:::me-context', context.currentUser);
+      if (!context.currentUser) {
+        return null; // Usuario no autenticado
+      }
+      return context.currentUser;
+    },
   },
 
   Mutation: {
@@ -175,13 +167,13 @@ const resolvers = {
       const user = new User({
         username: args.username,
         favoriteGenre: args.favoriteGenre,
-        passwordHash
+        passwordHash,
       });
       try {
         return await user.save();
       } catch (error) {
         throw new GraphQLError('Error al crear usuario', {
-          extensions: { code: 'BAD_USER_INPUT', error }
+          extensions: { code: 'BAD_USER_INPUT', error },
         });
       }
     },
@@ -191,7 +183,7 @@ const resolvers = {
       const passwordCorrect = user === null ? false : await bcrypt.compare(password, user.passwordHash);
       if (!(user && passwordCorrect)) {
         throw new GraphQLError('Credenciales incorrectas', {
-          extensions: { code: 'BAD_USER_INPUT' }
+          extensions: { code: 'BAD_USER_INPUT' },
         });
       }
       const userForToken = { username: user.username, id: user._id };
@@ -208,7 +200,7 @@ const resolvers = {
       const person = new Person({
         name: args.name,
         phone: args.phone,
-        address: { street: args.street, city: args.city }
+        address: { street: args.street, city: args.city },
       });
       await person.save();
       return person;
@@ -295,7 +287,7 @@ const server = new ApolloServer({
   csrfPrevention: false,
 });
 
-const wsServer = new WebSocketServer({
+const wsServer = new WebSocket.Server({
   server: httpServer,
   path: '/graphql',
 });
