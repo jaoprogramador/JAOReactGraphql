@@ -65,6 +65,9 @@ const typeDefs = `
     allBooks(genre: String): [Book!]!
     allAuthors: [Author!]!
     me: User
+    booksByFavoriteGenre(token: String!): [Book!]!
+
+    
   }
 
   type Person {
@@ -125,6 +128,25 @@ const BOOK_ADDED = 'BOOK_ADDED';
 
 const resolvers = {
   Query: {
+    booksByFavoriteGenre: async (root, { token }) => {
+      try {
+        // Verificar el token
+        const decodedToken = jwt.verify(token, JWT_SECRET);
+
+        // Encontrar al usuario
+        const currentUser = await User.findById(decodedToken.id);
+        if (!currentUser) {
+          throw new Error('Usuario no encontrado');
+        }
+
+        // Buscar libros según el género favorito
+        const genre = currentUser.favoriteGenre;
+        return await Book.find({ genres: genre }).populate('author');
+      } catch (error) {
+        throw new Error('Token inválido o no autorizado');
+      }
+    },
+
     personCount: async () => await Person.countDocuments(),
     allPersons: async () => await Person.find({}),
     findPerson: async (root, args) => await Person.findOne({ name: args.name }),
@@ -138,10 +160,15 @@ const resolvers = {
     },
     me: (root, args, context) => {
       return context.currentUser;
-    },
-    //ERROR getAllFavourite
-    /* allAuthors: async () => await Author.find(),
-    me: (root, args, context) => context.currentUser, */
+    },/* booksByFavoriteGenre: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
+      }
+      const genre = context.currentUser.favoriteGenre;
+      return await Book.find({ genres: genre }).populate('author');
+    }, */
+    
+    
   },
   Mutation: {
     createUser: async (root, args) => {
