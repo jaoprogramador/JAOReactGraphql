@@ -8,7 +8,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
 const { WebSocketServer } = WebSocket;
-import { useServer } from 'graphql-ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
 
 
 import express from 'express';
