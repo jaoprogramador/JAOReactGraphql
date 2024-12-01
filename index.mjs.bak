@@ -321,6 +321,7 @@ const httpServer = createServer(server);
 startStandaloneServer(server, {
   listen: { port: 4000 },
   context: async ({ req }) => {
+	console.log('startStandaloneServer::req', req);
     const auth = req ? req.headers.authorization : null;
     console.log('startStandaloneServer::auth', auth);
 
