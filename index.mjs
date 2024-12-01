@@ -154,11 +154,14 @@ const resolvers = {
     allAuthors: async () => {
       return await Author.find();
     },
-    me: (root, args, context) => {
-      console.log('Resolvers:::me-args',args);
-      console.log('Resolvers:::me-context',context.currentUser);
+   me: (root, args, context) => {
+	  console.log('Resolvers:::me-context', context.currentUser);
+	  if (!context.currentUser) {
+	    return null; // Usuario no autenticado
+	  }
 	  return context.currentUser;
-    },
+	},
+
   },
 
   Mutation: {
@@ -291,14 +294,27 @@ const server = new ApolloServer({
     console.error("Error en el servidor:", error); 
     return error;
   },
-  context: async ({ req }) => {
+ context: async ({ req }) => {
+  console.log('Request headers:', req.headers);
 
-    const token = req.headers.authorization || '';
-	console.log('server::::context-token',token);
-    const currentUser = token ? jwt.verify(token, JWT_SECRET) : null;
-	console.log('server::::context-token',currentUser);
-    return { currentUser };
+  const auth = req ? req.headers.authorization : null;
+  console.log('Authorization header:', auth);
+  if (auth && auth.startsWith('Bearer ')) {
+    try {
+      const token = auth.substring(7);
+      const decodedToken = jwt.verify(token, JWT_SECRET);
+      console.log('Decoded token:', decodedToken);
+      const currentUser = await User.findById(decodedToken.id);
+      console.log('Authenticated user:', currentUser);
+      return { currentUser };
+    } catch (error) {
+      console.error('Error verifying token:', error.message);
+    }
   }
+
+  return { currentUser: null };
+},
+
 
 });
 
@@ -308,15 +324,22 @@ startStandaloneServer(server, {
   listen: { port: 4000 },
   context: async ({ req }) => {
     const auth = req ? req.headers.authorization : null;
-	console.log('startStandaloneServer::auth',auth);
+    console.log('startStandaloneServer::auth', auth);
+
     if (auth && auth.startsWith('Bearer ')) {
-      const token = auth.substring(7);
-      const decodedToken = jwt.verify(token, JWT_SECRET);
-      const currentUser = await User.findById(decodedToken.id);
-      console.log('startStandaloneServer::currentUser',currentUser);
-		return { currentUser };
+      try {
+        const token = auth.substring(7);
+        const decodedToken = jwt.verify(token, JWT_SECRET);
+        const currentUser = await User.findById(decodedToken.id);
+        console.log('startStandaloneServer::currentUser', currentUser);
+        return { currentUser };
+      } catch (error) {
+        console.error('Error al verificar el token:', error.message);
+        // No lanzamos un error aquí, simplemente regresamos un contexto vacío.
+      }
     }
-  }
-}).then(({ url }) => {
-  console.log(`Server JAO ready at ${url}`);
+
+    // Si no hay token o es inválido, regresamos un objeto vacío
+    return { currentUser: null };
+  },
 });
