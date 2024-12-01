@@ -1,10 +1,8 @@
-
 const JWT_SECRET = 'SECRET_KEY';
 //VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { GraphQLError } from 'graphql';
 //import { WebSocketServer } from 'ws';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
 const { WebSocketServer } = WebSocket;
@@ -209,7 +207,25 @@ const resolvers = {
       await author.save();
       return await Book.findById(book._id).populate('author');
     },
-    
+    //ERROR.ADDBOOK
+    /* addBook: async (root, args, context) => {
+      const { title, published, genres } = args;
+      const authorName = args.author.name;
+      if (!context.currentUser) {
+        throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
+      }
+      let author = await Author.findOne({ name: authorName });
+      if (!author) {
+        author = new Author({ name: authorName, bookCount: 0 });
+        await author.save();
+      }
+      const book = new Book({ title, published, author: author._id, genres });
+      await book.save();
+      pubsub.publish(BOOK_ADDED, { bookAdded: book });
+      author.bookCount += 1;
+      await author.save();
+      return await Book.findById(book._id).populate('author');
+    }, */
   },
   Subscription: {
     bookAdded: {
@@ -289,7 +305,6 @@ app.use(
 // Iniciar el servidor
 const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
-  console.log(`Server JAO is running at http://localhost:${PORT}/graphql`);
-  console.log(`WebSocket subscriptions are running at ws://localhost:${PORT}/graphql`);
+  console.log(`Server JAO is running at https://jaoreactgraphqlfront.onrender.com/graphql`);
+  console.log(`WebSocket subscriptions are running at ws://https://jaoreactgraphqlfront.onrender.com/graphql`);
 }); 
-
