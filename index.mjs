@@ -292,8 +292,11 @@ const server = new ApolloServer({
     return error;
   },
   context: async ({ req }) => {
+
     const token = req.headers.authorization || '';
+	console.log('server::::context-token',token);
     const currentUser = token ? jwt.verify(token, JWT_SECRET) : null;
+	console.log('server::::context-token',currentUser);
     return { currentUser };
   }
 
