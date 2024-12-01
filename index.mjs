@@ -13,7 +13,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { PubSub } from 'graphql-subscriptions';
-const pubsub = new PubSub();
+
 import cors from 'cors';
 
 // Importar modelos
@@ -21,18 +21,20 @@ import Author from './models/Author.js';
 import Book from './models/Book.js';
 import User from './models/User.js';
 import Person from './models/Person.js'; 
+
+const pubsub = new PubSub();
 const JWT_SECRET = 'SECRET_KEY';
 const app = express();
-app.use(express.json()); // Error:message: 'GraphQL operations must contain a non-empty query 
+app.use(express.json());
 
-// Crear un servidor HTTP
+// Crear servidor HTTP
 const httpServer = createServer(app);
-// Configura CORS para permitir solicitudes desde tu frontend
-const corsOptions = {
-  origin: 'https://jaoreactgraphqlfront.onrender.com',  // Asegúrate de poner el dominio de tu frontend
-  credentials: true,  // Permite el envío de cookies (si es necesario)
-};
 
+// Configuración de CORS
+const corsOptions = {
+  origin: 'https://jaoreactgraphqlfront.onrender.com',
+  credentials: true,
+};
 app.use(cors(corsOptions));
 
 // Conexión a MongoDB
@@ -289,16 +291,32 @@ const resolvers = {
   },
 };
 
+// Configura el ApolloServer
 const server = new ApolloServer({
   schema: makeExecutableSchema({ typeDefs, resolvers }),
   csrfPrevention: false,
+  context: ({ req }) => {
+    const token = req.headers.authorization || '';
+    if (token) {
+      try {
+        const decodedToken = jwt.verify(token.split(' ')[1], JWT_SECRET);
+        return { currentUser: decodedToken };
+      } catch (err) {
+        console.error(err);
+        throw new Error('Authentication failed');
+      }
+    }
+    return {};
+  },
 });
 
+// Configura WebSocketLink para las suscripciones
 const wsServer = new WebSocket.Server({
   server: httpServer,
   path: '/graphql',
 });
 
+// Usa graphql-ws para las conexiones de WebSocket
 useServer({
   schema: makeExecutableSchema({ typeDefs, resolvers }),
   onConnect: async (context) => {
@@ -315,7 +333,7 @@ useServer({
   },
 }, wsServer);
 
-// Iniciar el servidor HTTP
+// Inicia el servidor HTTP
 const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
   console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`);
