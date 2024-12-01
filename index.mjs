@@ -284,7 +284,7 @@ const resolvers = {
   },
 };
 
-coconst server = new ApolloServer({
+const server = new ApolloServer({
   schema: makeExecutableSchema({ typeDefs, resolvers }),
   csrfPrevention: false,
 });

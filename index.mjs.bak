@@ -8,6 +8,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
 const { WebSocketServer } = WebSocket;
+const { useServer } = require('graphql-ws/lib/use/ws');
 
 import express from 'express';
 import http from 'http';
@@ -283,62 +284,28 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  csrfPrevention: false, // Deshabilita la protección CSRF temporalmente
-  formatError: (error) => {
-    console.error("Error en el servidor:", error); 
-    return error;
-  },
-/*
- context: async ({ req }) => {
-  console.log('Request headers:', req.headers);
+coconst server = new ApolloServer({
+  schema: makeExecutableSchema({ typeDefs, resolvers }),
+  csrfPrevention: false,
+});
 
-  const auth = req ? req.headers.authorization : null;
-  console.log('Authorization header:', auth);
-  if (auth && auth.startsWith('Bearer ')) {
-    try {
-      const token = auth.substring(7);
-      const decodedToken = jwt.verify(token, JWT_SECRET);
-      console.log('Decoded token:', decodedToken);
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
+});
+
+useServer({
+  schema: makeExecutableSchema({ typeDefs, resolvers }),
+  onConnect: async (context) => {
+    const token = context.connectionParams.authorization;
+    if (token && token.startsWith('Bearer ')) {
+      const decodedToken = jwt.verify(token.substring(7), JWT_SECRET);
       const currentUser = await User.findById(decodedToken.id);
-      console.log('Authenticated user:', currentUser);
-      return { currentUser };
-    } catch (error) {
-      console.error('Error verifying token:', error.message);
-    }
-  }
-
-  return { currentUser: null };
-},*/
-
-
-});
-
-const httpServer = createServer(server);
-
-startStandaloneServer(server, {
-  listen: { port: 4000 },
-  context: async ({ req }) => {
-	console.log('startStandaloneServer::req', req);
-    const auth = req ? req.headers.authorization : null;
-    console.log('startStandaloneServer::auth', auth);
-
-    if (auth && auth.startsWith('Bearer ')) {
-      try {
-        const token = auth.substring(7);
-        const decodedToken = jwt.verify(token, JWT_SECRET);
-        const currentUser = await User.findById(decodedToken.id);
-        console.log('startStandaloneServer::currentUser', currentUser);
-        return { currentUser };
-      } catch (error) {
-        console.error('Error al verificar el token:', error.message);
-        // No lanzamos un error aquí, simplemente regresamos un contexto vacío.
+      if (!currentUser) {
+        throw new Error('Authentication failed!');
       }
+      return { currentUser };
     }
-
-    // Si no hay token o es inválido, regresamos un objeto vacío
-    return { currentUser: null };
+    throw new Error('No Authorization header provided!');
   },
-});
+}, wsServer);
