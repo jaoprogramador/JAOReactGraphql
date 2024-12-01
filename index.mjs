@@ -130,17 +130,20 @@ const resolvers = {
   Query: {
     booksByFavoriteGenre: async (root, { token }) => {
       try {
+        console.log('booksByFavoriteGenre:::token',token);
         // Verificar el token
         const decodedToken = jwt.verify(token, JWT_SECRET);
-
+        console.log('booksByFavoriteGenre:::decodedToken',decodedToken);
         // Encontrar al usuario
         const currentUser = await User.findById(decodedToken.id);
+        console.log('booksByFavoriteGenre:::currentUser',currentUser);
         if (!currentUser) {
           throw new Error('Usuario no encontrado');
         }
 
         // Buscar libros según el género favorito
         const genre = currentUser.favoriteGenre;
+        console.log('booksByFavoriteGenre:::genre',genre);
         return await Book.find({ genres: genre }).populate('author');
       } catch (error) {
         throw new Error('Token inválido o no autorizado');
