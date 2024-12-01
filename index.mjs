@@ -28,6 +28,11 @@ import Person from './models/Person.js';
 const JWT_SECRET = 'SECRET_KEY';
 const app = express();
 app.use(express.json()); // Error:message: 'GraphQL operations must contain a non-empty query 
+
+// Crear un servidor HTTP
+const httpServer = createServer(app);
+
+
 // Conexión a MongoDB
 //mongoose.connect('mongodb+srv://tu_usuario:tu_contraseña@tu_cluster.mongodb.net/graphql-library', {})
 mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {})
