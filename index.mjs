@@ -7,7 +7,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
-const { WebSocketServer } = WebSocket;
+import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 
 
@@ -315,3 +315,9 @@ useServer({
     throw new Error('No Authorization header provided!');
   },
 }, wsServer);
+
+// Iniciar el servidor HTTP
+const PORT = process.env.PORT || 4000;
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`);
+});
