@@ -292,9 +292,11 @@ const server = new ApolloServer({
     return error;
   },
   context: async ({ req }) => {
-    console.log('server:::req.body',req.body); // Verifica la solicitud
-    // Resto del código...
+    const token = req.headers.authorization || '';
+    const currentUser = token ? jwt.verify(token, JWT_SECRET) : null;
+    return { currentUser };
   }
+
 });
 
 const httpServer = createServer(server);
