@@ -289,8 +289,19 @@ const resolvers = {
   },
   Subscription: {
     bookAdded: {
-      subscribe: () => pubsub.asyncIterator([BOOK_ADDED]),
+      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('BOOK_ADDED'),
+      resolve: (payload) => {
+        // Asegúrate de que 'payload' contiene todos los campos necesarios
+        if (!payload || !payload.title || !payload.author) {
+          throw new Error('Invalid book payload');
+        }
+        return payload;
+      },
     },
+  
+    /* bookAdded: {
+      subscribe: () => pubsub.asyncIterator([BOOK_ADDED]),
+    }, */
   },
 };
 
