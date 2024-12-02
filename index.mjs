@@ -1,12 +1,10 @@
-const JWT_SECRET = 'SECRET_KEY';
 //VERSION SIN ERRORES EN DEPLOY PERO SIN PERMITIR LOGG
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 //import { WebSocketServer } from 'ws';
 import WebSocket from 'ws';  // Importación por defecto de 'ws'
-const { WebSocketServer } = WebSocket;
-
+import { GraphQLError } from 'graphql';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import express from 'express';
 import http from 'http';
@@ -21,6 +19,8 @@ import Author from './models/Author.js';
 import Book from './models/Book.js';
 import User from './models/User.js';
 import Person from './models/Person.js'; 
+const { WebSocketServer } = WebSocket;
+const JWT_SECRET = 'SECRET_KEY';
 // Conexión a MongoDB
 //mongoose.connect('mongodb+srv://tu_usuario:tu_contraseña@tu_cluster.mongodb.net/graphql-library', {})
 mongoose.connect('mongodb+srv://jaoprogramador:QuJDcyCyEDGquupK@graphql-library.hjxot.mongodb.net/?retryWrites=true&w=majority&appName=graphql-library', {})
