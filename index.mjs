@@ -208,9 +208,9 @@ const resolvers = {
       console.log('addBook::::',args.title);
       console.log('addBook::::',args.published);
       console.log('addBook::::',args.genres);
-      if (!context.currentUser) {
+      /* if (!context.currentUser) {
         throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
-      }
+      } */
       if (title.length < 3) {
         throw new GraphQLError('El título del libro debe tener al menos 3 caracteres.', {
           extensions: { code: 'BAD_USER_INPUT', invalidArgs: title },
