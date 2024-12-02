@@ -204,6 +204,9 @@ const resolvers = {
     addBook: async (root, args, context) => {
       const { title, published, genres } = args;
       const authorName = args.author.name;
+      console.log('addBook::::',args.title);
+      console.log('addBook::::',args.published);
+      console.log('addBook::::',args.genres);
       if (!context.currentUser) {
         throw new GraphQLError('No autorizado', { extensions: { code: 'UNAUTHORIZED' } });
       }
@@ -235,6 +238,7 @@ const resolvers = {
 
       author.bookCount += 1;
       await author.save();
+      console.log('addBook::::author',author);
       return await Book.findById(book._id).populate('author');
     },
     //ERROR.ADDBOOK
@@ -256,6 +260,31 @@ const resolvers = {
       await author.save();
       return await Book.findById(book._id).populate('author');
     }, */
+    updateAuthor: async (_, { name, born }) => {
+      console.log('updateAuthor::::name',name);
+      console.log('updateAuthor::::born',born);
+      if (name.length < 3) {
+        throw new GraphQLError('El nombre del autor debe tener al menos 3 caracteres.', {
+          extensions: { code: 'BAD_USER_INPUT', invalidArgs: name },
+        });
+      }
+      const currentYear = new Date().getFullYear();
+      if (born > currentYear) {
+        throw new GraphQLError('El año de nacimiento no puede ser mayor que el año actual.', {
+          extensions: { code: 'BAD_USER_INPUT', invalidArgs: born },
+        });
+      }
+      const author = await Author.findOne({ name });
+      if (!author) {
+        throw new GraphQLError('Autor no encontrado', {
+          extensions: { code: 'BAD_USER_INPUT', invalidArgs: name },
+        });
+      }
+      author.born = born;
+      await author.save();
+      console.log('updateAuthor::::author',author);
+      return author;
+    },
   },
   Subscription: {
     bookAdded: {
